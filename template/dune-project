@@ -2,16 +2,18 @@
 
 (name {{ project_slug }})
 
-(source
- (github {{ github_username }}/{{ project_slug }}))
+{% if github_username %}(documentation "https://{{ github_username }}.github.io/{{ project_slug }}/"){% endif %}
 
-(license MIT)
+{% if github_username %}(source
+ (github {{ github_username }}/{{ project_slug }})){% endif %}
+
+(license ISC)
 
 (authors
-  "{{ username }}{% if author_email %} <{{ author_email }}>{% endif %}")
+  "{{ author_name }}{% if author_email %} <{{ author_email }}>{% endif %}")
 
 (maintainers
-  "{{ username }}{% if author_email %} <{{ author_email }}>{% endif %}")
+  "{{ author_name }}{% if author_email %} <{{ author_email }}>{% endif %}")
 
 (generate_opam_files true)
 
@@ -20,10 +22,14 @@
  (synopsis "{{ project_description }}")
  (description "{{ project_description }}")
  (depends
-  (ocaml
-   (>= 4.08.0))
+  (ocaml (>= 4.08.0))
   dune
-  (alcotest :with-test)
-  (odoc :with-doc)
   js_of_ocaml
-  js_of_ocaml-ppx))
+  js_of_ocaml-ppx
+  {%- if test_framework == 'Alcotest' %}
+  (alcotest :with-test)
+  {%- endif %}
+  (odoc :with-doc)
+  {%- if syntax == 'Reason' %}
+  (reason :build)
+  {%- endif %}))
